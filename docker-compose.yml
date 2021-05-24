@@ -9,6 +9,7 @@ services:
         POSTGRES_PASSWORD: ${PG_PASSWD}
         POSTGRES_DB: ${PG_DBNAME}
       volumes:
+        - ./dumps/notify_db.sql:/docker-entrypoint-initdb.d/notify_db.sql
         - postgres_data:/var/lib/postgresql/data
       networks:
         - notify
