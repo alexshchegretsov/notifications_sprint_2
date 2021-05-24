@@ -1,9 +1,6 @@
 # Скачиваем официальный образ с Docker Hub
 FROM python:3.8.10-slim
 
-# Получаем переменные при сборке образа
-ARG PORT
-
 # устанавливаем пременные окружения
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -11,7 +8,7 @@ ENV PYTHONPATH $APP_HOME
 
 # устанавливаем psycopg2 зависимости
 RUN apt-get update \
-    && apt-get upgrade -y && apt-get install -y gcc python3-dev
+    && apt-get upgrade -y && apt-get install -y gcc python3-dev supervisor
 
 # Обновляем `pip`
 RUN /usr/local/bin/python -m pip install --upgrade pip
@@ -22,6 +19,9 @@ RUN pipenv run pip install psycopg2-binary
 COPY ./Pipfile .
 RUN pipenv lock
 RUN pipenv install --system --deploy --ignore-pipfile
+
+# Копируем настройки supervisor
+COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 #########
 # FINAL #
@@ -50,5 +50,5 @@ RUN chmod +x $APP_HOME/async_api.py
 # меняем на пользователя `app`
 USER app
 
-# запускаем entrypoint.sh
-CMD ["$APP_HOME/python3 async_api.py --port $PORT"]
+# запускаем supervisord
+CMD ["/usr/bin/supervisord"]

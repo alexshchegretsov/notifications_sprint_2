@@ -1,0 +1,66 @@
+version: '3.3'
+
+services:
+  notify_db:
+    image: postgres:13.2-alpine
+      restart: always
+      environment:
+        POSTGRES_USER: ${PG_USER}
+        POSTGRES_PASSWORD: ${PG_PASSWD}
+        POSTGRES_DB: ${PG_DBNAME}
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      networks:
+        - notify
+
+  rabbit_mq_server:
+    image: rabbitmq:3.8.16-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+    environment:
+      RABBITMQ_DEFAULT_VHOST: ${RMQ_VHOST}
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
+    env_file:
+      - ./.env
+    networks:
+      - notify
+
+  api_service_with_dramariq:
+    build: ./api
+    image: notify_api_service:1.0.0
+    env_file:
+      - ./.env
+    expose:
+      - ${API_PORT}
+    depends_on:
+      - notify_db
+    networks:
+      - notify
+
+  admin_panel_with_celery:
+    build: ./admin
+    image: notify_admin_panel:1.0.0
+    volumes:
+      - static_files:/home/app/panel/config/static
+    depends_on:
+      - notify_db
+      - rabbit_mq_server
+    expose:
+      - 8000
+    env_file:
+      - ./.env
+    networks:
+      - notify
+
+networks:
+  notify:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.103.1.0/24

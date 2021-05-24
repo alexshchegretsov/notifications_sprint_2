@@ -34,7 +34,7 @@ COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # т.к. от пользователя `root` запускать приложение совершенно не секурно >.<
 
 # создатем соответствующие каталоги
-ENV APP_HOME=/home/app/api
+ENV APP_HOME=/home/app/panel
 RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
@@ -55,5 +55,5 @@ RUN chmod +x $APP_HOME/worker-beat-start.sh
 # меняем на пользователя `app`
 USER app
 
-# запускаем entrypoint.sh
+# запускаем supervisord
 CMD ["/usr/bin/supervisord"]
