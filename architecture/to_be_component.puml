@@ -1,0 +1,33 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+interface "port: 8000" as P
+interface "Auth" as A
+database "REDIS Result" as RDB
+database "PostgreSQL" as PSQL
+actor Manager
+cloud {
+    [SMTP]
+    [WebSocket]
+}
+
+Manager -right-> [Admin panel]
+[Admin panel] -up-> [RabbitMQ]
+
+[RabbitMQ] -> [Celery]
+[Celery] -> RDB : save event info
+[Celery] -up-> [Router]
+[Router] -up-> [WebSocket]
+[Router] -up-> [SMTP]
+
+[Celery] .down.> A
+
+[Admin panel] -down-> PSQL : save templates
+
+[API service] <-left- P
+[API service] -down-> [RabbitMQ] : send event
+
+note right of PSQL : Хранилище: \n * templates \n * группы рассылки \n etc.
+note right of A : Получаем данные о пользователе: username, email
+
+@enduml
