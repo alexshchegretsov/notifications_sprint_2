@@ -26,8 +26,7 @@ class ApiRouter(web.UrlDispatcher):
 
 
 async def init_app():
-    app = web.Application(router=ApiRouter())
-    return app
+    return web.Application(router=ApiRouter())
 
 
 loop = asyncio.get_event_loop()

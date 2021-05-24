@@ -20,8 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
-SECRET_KEY = 'foobar'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -47,7 +46,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-AUTH_DB_URL = os.getenv('AUTH_DB_URL', 'postgresql+psycopg2://postgres:postgres@84.201.181.184:5432/auth')
+AUTH_DB_URL = os.getenv('AUTH_DB_URL', '')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -104,7 +103,7 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SSL_PORT = 465
-SMTP_SERVER = 'smtp.gmail.com'
-SENDER_EMAIL = 'notifysmtp2@gmail.com'
-SENDER_PASSWORD = 'notifysmtp12345'
+SSL_PORT = os.getenv('SMTP_SSL_PORT', 465)
+SMTP_SERVER = os.getenv('SMTP_SERVER', '')
+SENDER_EMAIL = os.getenv('SENDER_EMAIL', '')
+SENDER_PASSWORD = os.getenv('SENDER_PASSWORD', '')

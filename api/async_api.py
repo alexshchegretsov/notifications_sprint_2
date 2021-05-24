@@ -1,13 +1,9 @@
-import argparse
+import os
 
 from aiohttp import web
-
 from app import app
-from routes import index
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--port', type=int, default=9999)
-args = parser.parse_args()
+port = os.getenv('API_APP_PORT', 9999)
 
-web.run_app(app, host='0.0.0.0', port=args.port,
+web.run_app(app, host='0.0.0.0', port=port,
             access_log_format='%a %t "%r" %s %b %Tf "%{Referer}i" "%{User-Agent}i"')
